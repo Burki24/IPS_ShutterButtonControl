@@ -3,7 +3,9 @@
     "name": "ShutterButton",
     "type": 3,
     "vendor": "Burki24",
-    "aliases": [],
+    "aliases": [
+        "Shutter Button"
+    ],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
