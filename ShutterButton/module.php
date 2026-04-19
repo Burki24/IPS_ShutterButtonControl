@@ -65,7 +65,7 @@ class ShutterButton extends IPSModuleStrict
         }
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         switch ($Ident) {
             case 'HandleLongPress':
