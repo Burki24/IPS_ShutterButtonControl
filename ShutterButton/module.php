@@ -12,7 +12,8 @@ class ShutterButton extends IPSModuleStrict
         parent::Create();
 
         $this->RegisterPropertyInteger('ButtonID', 0);
-        $this->RegisterPropertyInteger('ShutterID', 0);
+        $this->RegisterPropertyInteger('MoveID', 0);
+        $this->RegisterPropertyInteger('PositionID', 0);
         $this->RegisterPropertyInteger('Direction', 0);
         $this->RegisterPropertyInteger('ShortPressTime', 1000);
 
@@ -23,7 +24,7 @@ class ShutterButton extends IPSModuleStrict
         $this->RegisterAttributeFloat('PressStart', 0.0);
         $this->RegisterAttributeBoolean('LongPressActive', false);
 
-        // Debug / Status Variablen
+        // Debug Variablen
         $this->MaintainVariable(
             'LastDuration',
             'Letzte Druckdauer (ms)',
@@ -91,7 +92,7 @@ class ShutterButton extends IPSModuleStrict
 
             $this->SendDebug('Duration', (string)$duration, 0);
 
-            // 👉 Variable setzen
+            // Debug-Variablen setzen
             $this->SetValue('LastDuration', (int)$duration);
 
             if ($duration < $this->ReadPropertyInteger('ShortPressTime')) {
@@ -119,35 +120,55 @@ class ShutterButton extends IPSModuleStrict
         $this->MoveShutter();
     }
 
+    /**
+     * ShortPress → feste Position
+     */
     private function HandleShortPress(): void
     {
-        $this->MoveShutter();
-    }
-
-    private function MoveShutter(): void
-    {
-        $shutterID = $this->ReadPropertyInteger('ShutterID');
+        $positionID = $this->ReadPropertyInteger('PositionID');
         $direction = $this->ReadPropertyInteger('Direction');
 
-        if (!@IPS_VariableExists($shutterID)) {
+        if (!@IPS_VariableExists($positionID)) {
             return;
         }
 
         if ($direction === self::DIRECTION_UP) {
-            RequestAction($shutterID, 0); // Hoch
+            RequestAction($positionID, 0);   // komplett hoch
         } else {
-            RequestAction($shutterID, 100); // Runter
+            RequestAction($positionID, 100); // komplett runter
         }
     }
 
-    private function StopShutter(): void
+    /**
+     * LongPress → Bewegung starten
+     */
+    private function MoveShutter(): void
     {
-        $shutterID = $this->ReadPropertyInteger('ShutterID');
+        $moveID = $this->ReadPropertyInteger('MoveID');
+        $direction = $this->ReadPropertyInteger('Direction');
 
-        if (!@IPS_VariableExists($shutterID)) {
+        if (!@IPS_VariableExists($moveID)) {
             return;
         }
 
-        RequestAction($shutterID, -1); // STOP (geräteabhängig!)
+        if ($direction === self::DIRECTION_UP) {
+            RequestAction($moveID, 0); // UP
+        } else {
+            RequestAction($moveID, 1); // DOWN
+        }
+    }
+
+    /**
+     * Stop Bewegung
+     */
+    private function StopShutter(): void
+    {
+        $moveID = $this->ReadPropertyInteger('MoveID');
+
+        if (!@IPS_VariableExists($moveID)) {
+            return;
+        }
+
+        RequestAction($moveID, 2); // STOP
     }
 }
