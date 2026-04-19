@@ -162,10 +162,10 @@ class ShutterButton extends IPSModuleStrict
 
         if ($direction === self::DIRECTION_UP) {
             $this->SendDebug('Shutter', 'SHORT → Position 0 (hoch)', 0);
-            RequestAction($positionID, 0);
+            RequestAction($positionID, 100);
         } else {
             $this->SendDebug('Shutter', 'SHORT → Position 100 (runter)', 0);
-            RequestAction($positionID, 100);
+            RequestAction($positionID, 0);
         }
     }
 
