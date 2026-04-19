@@ -8,8 +8,13 @@
         },
         {
             "type": "SelectVariable",
-            "name": "ShutterID",
-            "caption": "Shutter Steuerung"
+            "name": "MoveID",
+            "caption": "Shutter Bewegung (Up/Down/Stop)"
+        },
+        {
+            "type": "SelectVariable",
+            "name": "PositionID",
+            "caption": "Shutter Position (0–100)"
         },
         {
             "type": "Select",
