@@ -157,15 +157,24 @@ class ShutterButton extends IPSModuleStrict
     {
         $positionID = $this->ReadPropertyInteger('PositionID');
         $direction = $this->ReadPropertyInteger('Direction');
+        $mode = $this->ReadPropertyInteger('PositionMode');
     
         if (!@IPS_VariableExists($positionID)) {
             $this->SendDebug('Error', 'PositionID ungültig', 0);
             return;
         }
     
-        $value = ($direction === self::DIRECTION_UP)
-            ? $this->ReadPropertyInteger('PositionUp')
-            : $this->ReadPropertyInteger('PositionDown');
+        // Standardwerte
+        $up = 100;
+        $down = 0;
+    
+        // ggf. invertieren
+        if ($mode === 1) {
+            $up = 0;
+            $down = 100;
+        }
+    
+        $value = ($direction === self::DIRECTION_UP) ? $up : $down;
     
         $this->SendDebug('Shutter', 'SHORT → Position ' . $value, 0);
     
