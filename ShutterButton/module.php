@@ -67,43 +67,50 @@ class ShutterButton extends IPSModuleStrict
         $buttonID = $this->ReadPropertyInteger('ButtonID');
 
         if (!@IPS_VariableExists($buttonID)) {
+            $this->SendDebug('Error', 'ButtonID ungültig', 0);
             return;
         }
 
         $value = GetValueBoolean($buttonID);
 
+        $this->SendDebug('Button', $value ? 'Pressed' : 'Released', 0);
+
         if ($value === true) {
             // gedrückt
-            $this->SendDebug('Button', 'Pressed', 0);
-
-            $this->WriteAttributeFloat('PressStart', microtime(true));
+            $start = microtime(true);
+            $this->WriteAttributeFloat('PressStart', $start);
             $this->WriteAttributeBoolean('LongPressActive', false);
 
+            $this->SendDebug('Timing', 'Start: ' . $start, 0);
+
             // Timer starten
-            $this->SetTimerInterval('LongPress', $this->ReadPropertyInteger('ShortPressTime'));
+            $time = $this->ReadPropertyInteger('ShortPressTime');
+            $this->SetTimerInterval('LongPress', $time);
+
+            $this->SendDebug('Timer', 'LongPress Timer gestartet: ' . $time . ' ms', 0);
+
         } else {
             // losgelassen
-            $this->SendDebug('Button', 'Released', 0);
-
             $this->SetTimerInterval('LongPress', 0);
+            $this->SendDebug('Timer', 'LongPress Timer gestoppt', 0);
 
             $start = $this->ReadAttributeFloat('PressStart');
-            $duration = (microtime(true) - $start) * 1000;
+            $end = microtime(true);
+            $duration = ($end - $start) * 1000;
 
-            $this->SendDebug('Duration', (string)$duration, 0);
+            $this->SendDebug('Timing', 'Start: ' . $start . ' End: ' . $end, 0);
+            $this->SendDebug('Timing', 'Dauer: ' . (string)$duration . ' ms', 0);
 
-            // Debug-Variablen setzen
+            // Debug Variablen
             $this->SetValue('LastDuration', (int)$duration);
 
             if ($duration < $this->ReadPropertyInteger('ShortPressTime')) {
-                // kurzer Druck
-                $this->SendDebug('Action', 'ShortPress', 0);
+                $this->SendDebug('Action', 'ShortPress erkannt', 0);
                 $this->SetValue('LastAction', 'ShortPress');
 
                 $this->HandleShortPress();
             } else {
-                // langer Druck → stoppen
-                $this->SendDebug('Action', 'LongPress Stop', 0);
+                $this->SendDebug('Action', 'LongPress Stop erkannt', 0);
                 $this->SetValue('LastAction', 'LongPress');
 
                 $this->StopShutter();
@@ -113,7 +120,7 @@ class ShutterButton extends IPSModuleStrict
 
     public function HandleLongPress(): void
     {
-        $this->SendDebug('LongPress', 'Start Movement', 0);
+        $this->SendDebug('Timer', 'LongPress ausgelöst → Bewegung starten', 0);
 
         $this->WriteAttributeBoolean('LongPressActive', true);
 
@@ -129,13 +136,16 @@ class ShutterButton extends IPSModuleStrict
         $direction = $this->ReadPropertyInteger('Direction');
 
         if (!@IPS_VariableExists($positionID)) {
+            $this->SendDebug('Error', 'PositionID ungültig', 0);
             return;
         }
 
         if ($direction === self::DIRECTION_UP) {
-            RequestAction($positionID, 0);   // komplett hoch
+            $this->SendDebug('Shutter', 'SHORT → Position 0 (hoch)', 0);
+            RequestAction($positionID, 0);
         } else {
-            RequestAction($positionID, 100); // komplett runter
+            $this->SendDebug('Shutter', 'SHORT → Position 100 (runter)', 0);
+            RequestAction($positionID, 100);
         }
     }
 
@@ -148,13 +158,16 @@ class ShutterButton extends IPSModuleStrict
         $direction = $this->ReadPropertyInteger('Direction');
 
         if (!@IPS_VariableExists($moveID)) {
+            $this->SendDebug('Error', 'MoveID ungültig', 0);
             return;
         }
 
         if ($direction === self::DIRECTION_UP) {
-            RequestAction($moveID, 0); // UP
+            $this->SendDebug('Shutter', 'MOVE UP → Value: 0', 0);
+            RequestAction($moveID, 0);
         } else {
-            RequestAction($moveID, 1); // DOWN
+            $this->SendDebug('Shutter', 'MOVE DOWN → Value: 1', 0);
+            RequestAction($moveID, 1);
         }
     }
 
@@ -166,9 +179,12 @@ class ShutterButton extends IPSModuleStrict
         $moveID = $this->ReadPropertyInteger('MoveID');
 
         if (!@IPS_VariableExists($moveID)) {
+            $this->SendDebug('Error', 'MoveID ungültig (Stop)', 0);
             return;
         }
 
-        RequestAction($moveID, 2); // STOP
+        $this->SendDebug('Shutter', 'STOP → Value: 2', 0);
+
+        RequestAction($moveID, 2);
     }
 }
