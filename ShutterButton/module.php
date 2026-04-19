@@ -16,6 +16,8 @@ class ShutterButton extends IPSModuleStrict
         $this->RegisterPropertyInteger('PositionID', 0);
         $this->RegisterPropertyInteger('Direction', 0);
         $this->RegisterPropertyInteger('ShortPressTime', 1000);
+        $this->RegisterPropertyInteger('PositionUp', 100);
+        $this->RegisterPropertyInteger('PositionDown', 0);
 
         // Timer für LongPress
         $this->RegisterTimer(
@@ -154,19 +156,19 @@ class ShutterButton extends IPSModuleStrict
     {
         $positionID = $this->ReadPropertyInteger('PositionID');
         $direction = $this->ReadPropertyInteger('Direction');
-
+    
         if (!@IPS_VariableExists($positionID)) {
             $this->SendDebug('Error', 'PositionID ungültig', 0);
             return;
         }
-
-        if ($direction === self::DIRECTION_UP) {
-            $this->SendDebug('Shutter', 'SHORT → Position 0 (hoch)', 0);
-            RequestAction($positionID, 100);
-        } else {
-            $this->SendDebug('Shutter', 'SHORT → Position 100 (runter)', 0);
-            RequestAction($positionID, 0);
-        }
+    
+        $value = ($direction === self::DIRECTION_UP)
+            ? $this->ReadPropertyInteger('PositionUp')
+            : $this->ReadPropertyInteger('PositionDown');
+    
+        $this->SendDebug('Shutter', 'SHORT → Position ' . $value, 0);
+    
+        RequestAction($positionID, $value);
     }
 
     /**
