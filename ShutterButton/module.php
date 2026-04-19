@@ -18,8 +18,11 @@ class ShutterButton extends IPSModuleStrict
         $this->RegisterPropertyInteger('ShortPressTime', 1000);
 
         // Timer für LongPress
-        $this->RegisterTimer('LongPress', 0, 'SBC_HandleLongPress($_IPS["TARGET"]);');
-
+        $this->RegisterTimer(
+            'LongPress',
+            0,
+            'IPS_RequestAction($_IPS["TARGET"], "HandleLongPress", 0);'
+        );
         // interne Attribute
         $this->RegisterAttributeFloat('PressStart', 0.0);
         $this->RegisterAttributeBoolean('LongPressActive', false);
@@ -62,6 +65,14 @@ class ShutterButton extends IPSModuleStrict
         }
     }
 
+    public function RequestAction($Ident, $Value)
+    {
+        switch ($Ident) {
+            case 'HandleLongPress':
+                $this->HandleLongPress();
+                break;
+        }
+    }
     private function HandleButton(): void
     {
         $buttonID = $this->ReadPropertyInteger('ButtonID');
