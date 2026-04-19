@@ -82,9 +82,17 @@ class ShutterButton extends IPSModuleStrict
             $this->SendDebug('Error', 'ButtonID ungültig', 0);
             return;
         }
-
-        $value = GetValueBoolean($buttonID);
-
+        
+        $valueRaw = GetValue($buttonID);
+        
+        $this->SendDebug('ButtonRaw', json_encode($valueRaw), 0);
+        
+        $value = $this->MapButtonState($valueRaw);
+        
+        if ($value === null) {
+            $this->SendDebug('Error', 'Unbekannter Button-Wert: ' . json_encode($valueRaw), 0);
+            return;
+        }
         $this->SendDebug('Button', $value ? 'Pressed' : 'Released', 0);
 
         if ($value === true) {
@@ -196,5 +204,28 @@ class ShutterButton extends IPSModuleStrict
         $this->SendDebug('Shutter', 'STOP → STOP', 0);
     
         RequestAction($moveID, 'STOP');
+    }
+
+        private function MapButtonState($value): ?bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+    
+        if (is_int($value)) {
+            return $value === 1;
+        }
+    
+        if (is_string($value)) {
+            $value = strtolower($value);
+    
+            return match ($value) {
+                'pressed' => true,
+                'released' => false,
+                default => null
+            };
+        }
+    
+        return null;
     }
 }
