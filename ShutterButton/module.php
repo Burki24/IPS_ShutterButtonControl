@@ -72,6 +72,7 @@ class ShutterButton extends IPSModuleStrict
                 $this->HandleLongPress();
                 break;
         }
+        $this->SendDebug('RequestAction', $Ident, 0);
     }
     private function HandleButton(): void
     {
