@@ -18,6 +18,7 @@ class ShutterButton extends IPSModuleStrict
         $this->RegisterPropertyInteger('ShortPressTime', 1000);
         $this->RegisterPropertyInteger('PositionUp', 100);
         $this->RegisterPropertyInteger('PositionDown', 0);
+        $this->RegisterPropertyInteger('PositionMode', 0);
 
         // Timer für LongPress
         $this->RegisterTimer(
