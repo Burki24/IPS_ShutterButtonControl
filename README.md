@@ -66,7 +66,7 @@ Steuert Rollläden über Taster und unterscheidet zwischen kurzem und langem Tas
 
 ---
 
-## 🧠 Funktionsweise
+## Funktionsweise
 
 ### Kurzer Tastendruck
 
@@ -83,7 +83,7 @@ Steuert Rollläden über Taster und unterscheidet zwischen kurzem und langem Tas
 
 ---
 
-## ⚠️ Hinweise
+## Hinweise
 
 - Die verwendeten Werte (`OPEN`, `CLOSE`, `STOP`) sind gerätespezifisch  
 - Nicht alle Geräte unterstützen `STOP`  
@@ -92,13 +92,13 @@ Steuert Rollläden über Taster und unterscheidet zwischen kurzem und langem Tas
 
 ---
 
-## 🔧 Entwicklung & SDK
+## Entwicklung & SDK
 
 Dieses Modul basiert auf dem offiziellen  
 [Symcon PHP SDK](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 
 ---
 
-## 📄 Lizenz
+## Lizenz
 
 Dieses Projekt steht unter der MIT License.
