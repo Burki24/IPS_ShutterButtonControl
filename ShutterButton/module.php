@@ -156,19 +156,17 @@ class ShutterButton extends IPSModuleStrict
     {
         $moveID = $this->ReadPropertyInteger('MoveID');
         $direction = $this->ReadPropertyInteger('Direction');
-
+    
         if (!@IPS_VariableExists($moveID)) {
             $this->SendDebug('Error', 'MoveID ungültig', 0);
             return;
         }
-
-        if ($direction === self::DIRECTION_UP) {
-            $this->SendDebug('Shutter', 'MOVE UP → Value: 0', 0);
-            RequestAction($moveID, 0);
-        } else {
-            $this->SendDebug('Shutter', 'MOVE DOWN → Value: 1', 0);
-            RequestAction($moveID, 1);
-        }
+    
+        $value = ($direction === self::DIRECTION_UP) ? 'OPEN' : 'CLOSE';
+    
+        $this->SendDebug('Shutter', 'MOVE → ' . $value, 0);
+    
+        RequestAction($moveID, $value);
     }
 
     /**
@@ -177,14 +175,14 @@ class ShutterButton extends IPSModuleStrict
     private function StopShutter(): void
     {
         $moveID = $this->ReadPropertyInteger('MoveID');
-
+    
         if (!@IPS_VariableExists($moveID)) {
             $this->SendDebug('Error', 'MoveID ungültig (Stop)', 0);
             return;
         }
-
-        $this->SendDebug('Shutter', 'STOP → Value: 2', 0);
-
-        RequestAction($moveID, 2);
+    
+        $this->SendDebug('Shutter', 'STOP → STOP', 0);
+    
+        RequestAction($moveID, 'STOP');
     }
 }
