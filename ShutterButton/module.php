@@ -19,9 +19,28 @@ class ShutterButton extends IPSModuleStrict
         // Timer für LongPress
         $this->RegisterTimer('LongPress', 0, 'SBC_HandleLongPress($_IPS["TARGET"]);');
 
-        // interne Variablen
+        // interne Attribute
         $this->RegisterAttributeFloat('PressStart', 0.0);
         $this->RegisterAttributeBoolean('LongPressActive', false);
+
+        // Debug / Status Variablen
+        $this->MaintainVariable(
+            'LastDuration',
+            'Letzte Druckdauer (ms)',
+            VARIABLETYPE_INTEGER,
+            '',
+            10,
+            true
+        );
+
+        $this->MaintainVariable(
+            'LastAction',
+            'Letzte Aktion',
+            VARIABLETYPE_STRING,
+            '',
+            20,
+            true
+        );
     }
 
     public function ApplyChanges(): void
@@ -72,13 +91,20 @@ class ShutterButton extends IPSModuleStrict
 
             $this->SendDebug('Duration', (string)$duration, 0);
 
+            // 👉 Variable setzen
+            $this->SetValue('LastDuration', (int)$duration);
+
             if ($duration < $this->ReadPropertyInteger('ShortPressTime')) {
                 // kurzer Druck
                 $this->SendDebug('Action', 'ShortPress', 0);
+                $this->SetValue('LastAction', 'ShortPress');
+
                 $this->HandleShortPress();
             } else {
                 // langer Druck → stoppen
                 $this->SendDebug('Action', 'LongPress Stop', 0);
+                $this->SetValue('LastAction', 'LongPress');
+
                 $this->StopShutter();
             }
         }
@@ -122,6 +148,6 @@ class ShutterButton extends IPSModuleStrict
             return;
         }
 
-        RequestAction($shutterID, -1); // STOP (abhängig vom Gerät!)
+        RequestAction($shutterID, -1); // STOP (geräteabhängig!)
     }
 }
