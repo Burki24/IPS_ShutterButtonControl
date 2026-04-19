@@ -33,5 +33,14 @@
             "maximum": 5000,
             "step": 100
         }
+        {
+            "type": "Select",
+            "name": "PositionMode",
+            "caption": "Positionslogik",
+            "options": [
+                { "caption": "0 = offen / 100 = geschlossen", "value": 0 },
+                { "caption": "0 = geschlossen / 100 = offen", "value": 1 }
+            ]
+        }
     ]
 }
